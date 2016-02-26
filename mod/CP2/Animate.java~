@@ -1,0 +1,124 @@
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+
+
+
+class Animate {	// -------------------------------------------------------------
+
+	static double t = 0;
+	static boolean running = false;  static boolean drawGraph = false;                  
+	static Sirs Smodel = new Sirs();
+
+	static void init(final BufferedImage bi, final int W, final double im) {
+			int[][] l = Smodel.initImmune(W,im);
+			//int[][] l = Smodel.initImmune(W,0.5);
+			//int[][] l = Smodel.initSus(W);
+			for (int i = 0; i < bi.getWidth(); i++){
+			for (int j = 0; j < bi.getHeight(); j++){
+			bi.setRGB(i, j, l[i][j]== -1 ? Color.GREEN.getRGB() : 
+					l[i][j]== 0 ? Color.BLUE.getRGB() :
+					l[i][j]== 1 ? Color.RED.getRGB() : Color.WHITE.getRGB());}}
+			String I = Double.valueOf(Measurements.updateI(l,W)).toString();
+			String R = Double.valueOf(Measurements.updateR(l,W)).toString();
+			String S = Double.valueOf(Measurements.updateS(l,W)).toString();
+			String T = Double.valueOf(t).toString();
+			if(drawGraph){
+			try{dynamicplot.startPlot(T,I,R,S);} catch (Exception e) {System.out.println("Unable to update plot");}
+			t++;	
+			}		
+	}
+
+	
+
+	static void update(final BufferedImage bi, final int W,final double p1, final double p2, final double p3) {		
+			int[][] l = Smodel.update(W,p1,p2,p3); 
+			for (int i = 0; i < W; i++){
+			for (int j = 0; j < W; j++){
+			bi.setRGB(i, j, l[i][j]== -1 ? Color.GREEN.getRGB() : 
+					l[i][j]== 0 ? Color.BLUE.getRGB() :
+					l[i][j]== 1 ? Color.RED.getRGB() : Color.WHITE.getRGB());}}
+			String I = Double.valueOf(Measurements.updateI(l,W)).toString();
+			String R = Double.valueOf(Measurements.updateR(l,W)).toString();
+			String S = Double.valueOf(Measurements.updateS(l,W)).toString();
+			String T = Double.valueOf(t).toString();
+			try{dynamicplot.updatePlot(T,I,R,S);} catch (Exception e) {System.out.println("Unable to update plot");}
+			t++;
+	}
+	
+
+	//----------------------------------------------------------------------
+
+	public static void main(final String[] args) throws Exception {
+		if (args.length != 6) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
+		final int W = Integer.parseInt(args[0]);
+		final double p1 = Double.parseDouble(args[1]);
+		final double p2 = Double.parseDouble(args[2]);
+		final double p3 = Double.parseDouble(args[3]);
+		final int out = Integer.parseInt(args[4]);
+		final double im = Double.parseDouble(args[5]);
+
+		final BufferedImage bi = new BufferedImage(W, W, BufferedImage.TYPE_INT_RGB);
+		final Object lock = new Object();
+		final Frame f = new Frame();
+		Panel controlPanel = new Panel();
+		f.setIgnoreRepaint(true);
+		f.setTitle("Animate " + args[0]);
+		f.setVisible(true);
+		f.setSize(W, W + f.getInsets().top);
+		f.setExtendedState(Frame.MAXIMIZED_BOTH);
+		f.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent we) {System.exit(0);}});
+		f.add(controlPanel,BorderLayout.SOUTH);
+		
+		// adding a start button 
+		final Button startButton = new Button("  Start  ");
+	        controlPanel.add(new Label("     "));           
+        	startButton.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+                running = !running;
+        	if (running) startButton.setLabel("Pause"); else startButton.setLabel("Resume");
+       		     }
+        	});
+        	controlPanel.add(startButton);
+
+		// adding a reset button 
+		final Button resetButton = new Button("  Reset  ");
+	        controlPanel.add(new Label("     "));           
+        	resetButton.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+                init(bi,W,im);
+       		     }
+        	});
+        	controlPanel.add(resetButton);
+
+		// adding a checkbox 
+                Checkbox graph = new Checkbox("Graph");
+  		graph.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {             
+		drawGraph = !drawGraph;
+                init(bi,W,im);
+        	 }
+      		});
+ 		controlPanel.add(graph);
+
+		
+		init(bi,W,im);
+		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {f.getGraphics().drawImage(bi, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);}}}, 0, 33);
+		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {
+				if (running) {update(bi,W,p1,p2,p3);}}}}, 0, 100);
+
+	}
+
+	//----------------------------------------------------------------------
+
+}
+
+
+

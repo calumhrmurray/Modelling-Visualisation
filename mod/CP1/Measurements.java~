@@ -1,0 +1,103 @@
+/**
+ *	Static methods used to make measurements
+ */
+
+public class Measurements{
+
+
+	// returns the magnetisation of the lattice
+	public static double updateM(int[][] l, final int W){
+		double M = 0;
+		// Sum all the spins
+		for (int i = 0; i < W; i++){
+		for (int j = 0; j < W; j++){
+		M += l[i][j];
+		}}	
+		return M;
+	}
+	// returns the energy of the lattice
+	public static double updateE(int[][] l, final int W){
+		int r,t;
+		double E =0;
+		for (int i = 0; i < W; i++){
+		for (int j = 0; j < W; j++){
+   	        if (i == W-1){ r = l[0][j];}else{r = l[i+1][j];}
+   	        if (j == 0){ t = l[i][W-1];}else{t = l[i][j-1];}
+		E += -J*l[i][j]*(r+t);
+		}}
+		return E;
+	}
+	// returns Chi Cv and errors in measurements
+	public static double[][] stats(double[][] sArray, int N, double T, final int W){
+		double[][] rArray = new double[N][2];
+		double[][] dataArray = new double[1][4];
+		double[][] sigArray = new double[1][2];
+		double tM = 0; double tE = 0;	double tM2 = 0; double tE2 = 0;
+
+		// Chi and Cv
+		// sum up all the elements of each row
+		for (int i = 0; i<N; i++){
+			tM += sArray[i][0];
+			tE += sArray[i][1];
+			tM2 += sArray[i][0]*sArray[i][0];
+			tE2 += sArray[i][1]*sArray[i][1];
+		}
+
+		sigArray = bootstrap(sArray,N,T,W);
+
+		// Chi, Cv				
+		dataArray[0][0] = ((tM2/N)-(tM/N)*(tM/N))/(kb*T*W);
+		dataArray[0][1] = ((tE2/N)-(tE/N)*(tE/N))/(kb*T*T);
+		// errors
+		dataArray[0][2] = sigArray[0][0];
+		dataArray[0][3] = sigArray[0][1];
+
+		return dataArray;
+	}
+	// bootsrap
+	public static double[][] bootstrap(double[][] sArray, int N, double T, final int W){
+		// number of Cv,Chi taken from bootstrap
+		int n = 10;
+		double tM = 0; double tE = 0;	double tM2 = 0; double tE2 = 0;
+		double[][] rArray = new double[N][2];
+		double[][] bootArray = new double[n][2];
+		double[][] sigArray = new double[1][2];
+		double rtM = 0; double rtE = 0; double rtM2 = 0; double rtE2 = 0;
+		// calc. Cv and Chi n times using resampled data
+		for (int i = 0; i<n; i++){
+			// pick out n measurements at random and compute Cv, Chi
+			for (int j = 0; j<N; j++){
+				// ask whether the 1000th point has anything in it!!!!!!!!!!!!!!!!!!!!!!!!!
+				rArray[j][0] = sArray[(int)(Math.random()*N)][0];	
+				rArray[j][1] = sArray[(int)(Math.random()*N)][1];
+	
+				tM += rArray[j][0];
+				tE += rArray[j][1];
+				tM2 += rArray[j][0]*sArray[j][0];
+				tE2 += rArray[j][1]*sArray[j][1];
+			}
+			// array with n values of Cv and Chi
+			bootArray[i][0] = ((tM2/N)-(tM/N)*(tM/N))/(kb*T*W);
+			bootArray[i][1] = ((tM2/N)-(tM/N)*(tM/N))/(kb*T*T);
+		}
+
+
+		// sum up all the elements of each row
+		for (int i = 0; i<n; i++){
+			tM += bootArray[i][0];
+			tE += bootArray[i][1];
+			tM2 += bootArray[i][0]*bootArray[i][0];
+			tE2 += bootArray[i][1]*bootArray[i][1];
+		}
+
+		sigArray[0][0] = Math.sqrt((tM2/N)-(tM/N)*(tM/N))/(kb*T*W);
+		sigArray[0][1] = Math.sqrt((tE2/N)-(tE/N)*(tE/N))/(kb*T*T);
+
+		return sigArray	;
+
+	}
+
+
+
+
+}
