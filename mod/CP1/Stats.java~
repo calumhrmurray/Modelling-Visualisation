@@ -36,8 +36,8 @@ public class Stats{
 		// Chi and Cv
 		dataArray = calc(sArray,N,T,W,kb);
 		// Errors
-		//sigArray = bootstrap(sArray,N,T,W,kb);
-		sigArray = jacknife(sArray,dataArray,N,T,W,kb);
+		sigArray = bootstrap(sArray,N,T,W,kb);
+		//sigArray = jacknife(sArray,dataArray,N,T,W,kb);
 		// Chi, Cv				
 		statArray[0][0] = dataArray[0][0];
 		statArray[0][1] = dataArray[0][1];
@@ -57,7 +57,7 @@ public class Stats{
 		dataArray[0][1] = (dataArray[0][1])/(kb*T*T);
 		return dataArray;
 	}
-	// bootsrap
+	// bootstrap
 	public static double[][] bootstrap(double[][] sArray, int N, double T, final int W, double kb){
 		// number of Cv,Chi taken from bootstrap
 		int n = 10;
@@ -83,7 +83,6 @@ public class Stats{
 		sigArray[0][0] = Math.sqrt(sigArray[0][0]);
 		sigArray[0][1] = Math.sqrt(sigArray[0][1]);
 		return sigArray	;
-
 	}
 	// jacknife
 	public static double[][] jacknife(double[][] sArray,double[][] dataArray, int N, double T, final int W, double kb){
@@ -109,7 +108,6 @@ public class Stats{
 		sigArray[0][0] = Math.sqrt(chiError);
 		sigArray[0][1] = Math.sqrt(CvError);
 		return sigArray	;
-
 	}
 	// Calculates variance of two quantities
 	public static double[][] variance(double[][] data, int n, int N){
@@ -127,7 +125,6 @@ public class Stats{
 		output[0][1] = t12/N-(t1/N)*(t1/N);
 
 		return output;
-
 	}
 
 

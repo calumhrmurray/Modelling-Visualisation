@@ -13,10 +13,7 @@ import java.awt.*;
 class Animate {	// -------------------------------------------------------------
 
   	static Label labelT = new Label("Temperature:	      ");
-	static Label labelM = new Label("Magnetisation:     ");
-	static Label labelE = new Label("Energy:	");
-	static boolean running = true;                    // true when simulation is running
-	
+
 	static Ising Imodel = new Ising();
 
 	static void init(final BufferedImage bi, final int W, final int c) {
@@ -61,8 +58,6 @@ class Animate {	// -------------------------------------------------------------
 		Panel controlPanel = new Panel();
 		f.add(controlPanel,BorderLayout.SOUTH);
 		controlPanel.add(labelT);
-		controlPanel.add(labelM);
-		controlPanel.add(labelE);
 		final Scrollbar tempScale = new Scrollbar(Scrollbar.HORIZONTAL,t,1,0,1001){ 
 			public Dimension getPreferredSize(){
 				return new Dimension(100,15); // make it bigger than default
@@ -75,18 +70,6 @@ class Animate {	// -------------------------------------------------------------
             	}
         	});
 
-		// adding a start button
-		final Button startButton = new Button("  Start  ");
-	        controlPanel.add(new Label("     "));           
-        	startButton.addActionListener(new ActionListener() {
-            	public void actionPerformed(ActionEvent e) {
-                running = !running;
-        	if (running) startButton.setLabel("Pause"); else startButton.setLabel("Resume");
-       		     }
-        	});
-        	controlPanel.add(startButton);
-
-	
 		init(bg,W,c);
 		fg.setData(bg.getData());
 
@@ -94,9 +77,9 @@ class Animate {	// -------------------------------------------------------------
 			public void run() {f.getGraphics().drawImage(
 				fg, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);
 								}}, 0, 33);
-		if (running){
+
 		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {update(bg,tempScale,d,W); fg.setData(bg.getData());}}, 0, 1);}
-	}
+	
 }
 
 	//----------------------------------------------------------------------

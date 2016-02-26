@@ -20,8 +20,8 @@ public class Stats{
 		double E =0;
 		for (int i = 0; i < W; i++){
 		for (int j = 0; j < W; j++){
-   	        if (i == W-1){ r = l[0][j];}else{r = l[i+1][j];}
-   	        if (j == 0){ t = l[i][W-1];}else{t = l[i][j-1];}
+   	        if (i == W-1){r = l[0][j];}else{r = l[i+1][j];}
+   	        if (j == 0){t = l[i][W-1];}else{t = l[i][j-1];}
 		E += -J*l[i][j]*(r+t);
 		}}
 		return E;
@@ -61,16 +61,13 @@ public class Stats{
 	public static double[][] bootstrap(double[][] sArray, int N, double T, final int W, double kb){
 		// number of Cv,Chi taken from bootstrap
 		int n = 10;
-		double tM = 0; double tE = 0;	double tM2 = 0; double tE2 = 0;
 		double[][] rArray = new double[N][2];
 		double[][] bootArray = new double[n][2];
 		double[][] sigArray = new double[1][2];
-		double rtM = 0; double rtE = 0; double rtM2 = 0; double rtE2 = 0;
 		// calc. Cv and Chi n times using resampled data
 		for (int i = 0; i<n; i++){
 			// pick out n measurements at random and compute Cv, Chi
 			for (int j = 0; j<N; j++){
-				// ask whether the 1000th point has anything in it!!!!!!!!!!!!!!!!!!!!!!!!!
 				rArray[j][0] = sArray[(int)(Math.random()*N)][0];	
 				rArray[j][1] = sArray[(int)(Math.random()*N)][1];	
 			}
@@ -83,7 +80,6 @@ public class Stats{
 		sigArray[0][0] = Math.sqrt(sigArray[0][0]);
 		sigArray[0][1] = Math.sqrt(sigArray[0][1]);
 		return sigArray	;
-
 	}
 	// jacknife
 	public static double[][] jacknife(double[][] sArray,double[][] dataArray, int N, double T, final int W, double kb){
@@ -104,12 +100,10 @@ public class Stats{
 			// array with n values of Cv and Chi
 			chiError += (calc(jArray,N-1,T,W,kb)[0][0]-dataArray[0][0])*(calc(jArray,N-1,T,W,kb)[0][0]-dataArray[0][0]);
 			CvError += (calc(jArray,N-1,T,W,kb)[0][1]-dataArray[0][1])*(calc(jArray,N-1,T,W,kb)[0][1]-dataArray[0][1]);			
-		}	
-		
+		}			
 		sigArray[0][0] = Math.sqrt(chiError);
 		sigArray[0][1] = Math.sqrt(CvError);
 		return sigArray	;
-
 	}
 	// Calculates variance of two quantities
 	public static double[][] variance(double[][] data, int n, int N){
@@ -127,7 +121,6 @@ public class Stats{
 		output[0][1] = t12/N-(t1/N)*(t1/N);
 
 		return output;
-
 	}
 
 

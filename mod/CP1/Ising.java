@@ -54,7 +54,8 @@ public class Ising{
    	        if (i == W-1) r = l[0][j]; else r = l[i+1][j];
    	        if (j == 0) t = l[i][W-1]; else t = l[i][j-1];
    	        if (j == W-1) b = l[i][0]; else b = l[i][j+1];
-   	        return 2.0 * l[i][j] * (lt + r + t + b);
+		// if current bonds negative total => positive deltaU & vice versa
+   	        return 2.0 * J * l[i][j] * (lt + r + t + b);
    	} 
 	
 
@@ -65,9 +66,9 @@ public class Ising{
 			int i = (int) (Math.random()*W); 
                 	int j = (int) (Math.random()*W);
                 	// work out energy change if spin is swapped
-			double delta = J*deltaU(l,W,i,j);
+			double delta = deltaU(l,W,i,j);
 			// metropolis	
-			if (Math.random()<Math.min(1,Math.exp(-delta/temperature*kb))){l[i][j] = -l[i][j];} 
+			if (Math.random()<Math.exp(-delta/temperature*kb)){l[i][j] = -l[i][j];} 
 		}			
 		return l;
 		}	
@@ -80,7 +81,7 @@ public class Ising{
 			int i = (int)(Math.random()*W); int j = (int)(Math.random()*W);
 			// choose a new random row and column  
 			int s = (int)(Math.random()*W); int t = (int)(Math.random()*W); 
-			// make sure they're different, should I bother????????????
+			// make sure they're different, should I bother?
 			while (i == s && j == t){
 			      s = (int)(Math.random()*W); 
  			      t = (int)(Math.random()*W); 	
@@ -90,11 +91,10 @@ public class Ising{
 				// work out energy change if spin is swapped 
 				double deltaE = deltaU(l,W,i,j)+deltaU(l,W,s,t); 
 				// fix for double counting
-				if (i+1==s||i-1==s||j+1==t||j-1==t && deltaE>0){deltaE = deltaE - 2;} 
+				if (i+1==s||i-1==s||j+1==t||j-1==t && deltaE>0){deltaE = deltaE - 2*J;} //should add +4*J with nearest neighbour, fix check for n.n. with periodic b.c.
+				if (i+1==s||i-1==s||j+1==t||j-1==t && deltaE<=0){deltaE = deltaE + 2*J;} 
 				// metropolis
-				// Will math.random return numbers only less than 1?		
-				// Why do min of this????????? surely works anyway???????????	
-				if (Math.random()<Math.min(1,Math.exp(-deltaE/temperature*kb))){l[i][j] = -l[i][j];l[s][t] = -l[s][t];}
+				if (Math.random()<Math.exp(-deltaE/temperature*kb)){l[i][j]=-l[i][j];l[s][t]=-l[s][t];}
 			}
 		}			
 		return l;
@@ -118,99 +118,18 @@ public class Ising{
 		l = new int[W][W];
 		// Initialise model	
 		init(W,c);
-
+		// Chooses simulation method
 		if(sim==0){
 		Animate.main(args);
 		} else if (sim==1) { Simulate.startMeasurements(l,d,W,1000,J,kb,output); 
-		} else {System.out.println("Simulation does not exist: sim = 0 for animation, sim = 1 for Chi and Cv ");}
+		} else {System.out.println("Simulation does not exist: sim = 0 for animation, sim = 1 for Chi and Cv calculations");}
 			
 
 		}
 
-
-
-
-
 }
 
 	//----------------------------------------------------------------------
-
-
-	//** Check list **//
-
-	/**	
-					
-
-		\/\/\/\/\/Sort out kawasaki - definetly incorrect!!!!\/\/\/\/\/
-		\/\/\/\/\/Neaten up code\/\/\/\/\/\/
-   	        \/\/\/\/\/Include J and k \/\/\/\/\/
-		\/\/\/\/\/nicer measurements methods\/\/\/\/
-		\/\/\/\/\/make Cv measurements\/\/\/\/\/
-		\/\/\/\/\/work out how to do errors\/\/\/\/
-		\/\/\/\/\/sample every 10 steps\/\/\/\/\/
-		\/\/\/\/\/fix chi\/\/\/\/\/
-		\/\/\/\/\/neaten up errors\/\/\/\/
-		\/\/\/\/\/combine errors with Chi and Cv?\/\/\/\/
-		go through checkpoint get all graphs ready
-		\/\/\/\/\/GENERALISE methods\/\/\/\/\/
-		\/\/\/\/\/\/could add an rms method\/\/\/\/
-		\/\/\/\/\/\/\could bootstrap method be simplified?\/\/\/\/\/
-		\/\/\/\/\//\both glauber and kawasaki animate seems to hit critical T at the wrong value! SEEMS TO WORK NOW\/\/\/\/
-		check that kawasaki double counting is defo correct
-		\/\/\/\/\/\/\/add jacknife\/\/\/\/\/\/
-		sort out the wrong first value
-		add text block with total magnets and energy to animate output
-		add start button
-		fix low T kawasaki
-
-
-
-	*/
-
-
-/*		// number of steps waiting for equilibrium
-		int wait = 100; 
-		// number of measurements taken for each value of T
-		int N = 1000;	
-		// initialise doubles and ints for measurements
-		double M,Temp,E;
-		int ndata;
-		double[][] sArray = new double[N][2];
-		// data array
-		double[][] data = new double[1][4];
-
-		// for measurements
-		// loop over a range of T
-		for (double T=12;T<50;T++){
-                        // set measurements to zero each time around
-			M = 0;
-			E = 0;
-			ndata = 0;
-			Temp = T/10;		
-			//perform measurements
-			for (int i=0;i<(wait+1+N*10);i++){
-				l = update(d,Temp,W);		
-				// wait till equilibrium is reached
-				if(i>wait){
-					// take measurements every 10 steps
-					if(i % 10 == 0){	
-						// take measurements and store them
-						sArray[ndata][0] = Stats.updateM(l,W);
-						sArray[ndata][1] = Stats.updateE(l,W,J);
-						ndata++;						
-					}
-				}
-			}
-			// calculate Cv,Chi and their errors
-			data = Stats.stats(sArray, N, Temp, W, kb);
-			M = Stats.updateM(l,W);
-			E = Stats.updateE(l,W,J);
-			// output stuff
-	                output.printf(" "+Temp+" "+data[0][0]+" "+data[0][1]+ " "+data[0][2]+" "+data[0][3]+" "+M+" "+E+" "+ndata+"\n");
-		}		
-		output.close();	
-			}	
-*/
 
 
 

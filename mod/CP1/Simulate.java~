@@ -19,12 +19,12 @@ public class Simulate{
 
 		// for measurements
 		// loop over a range of T
-		for (double T=120;T<500;T++){
+		for (double T=10;T<50;T++){
                         // set measurements to zero each time around
 			M = 0;
 			E = 0;
 			ndata = 0;
-			Temp = T/100;		
+			Temp = T/10;		
 			//perform measurements
 			for (int i=0;i<(wait+1+N*10);i++){
 				l = Ising.update(d,Temp,W);		
@@ -40,11 +40,11 @@ public class Simulate{
 				}
 			}
 			// calculate Cv,Chi and their errors
-			//data = Stats.stats(sArray, N, Temp, W, kb);
-			M = Stats.updateM(l,W);
-			E = Stats.updateE(l,W,J);
-			// output stuff
-	                output.printf(" "+Temp+" "+data[0][0]+" "+data[0][1]+ " "+data[0][2]+" "+data[0][3]+" "+M+" "+E+" "+ndata+"\n");
+			data = Stats.stats(sArray, N, Temp, W, kb);
+			//M = Stats.updateM(l,W);
+			//E = Stats.updateE(l,W,J);
+			// output stuff, ignore first measurement
+			if ( T != 10){output.printf(" "+Temp+" "+data[0][0]+" "+data[0][1]+ " "+data[0][2]+" "+data[0][3]+" "+M+" "+E+" "+ndata+"\n");}
 		}		
 		output.close();	
 

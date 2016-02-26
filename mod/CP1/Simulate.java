@@ -40,11 +40,11 @@ public class Simulate{
 				}
 			}
 			// calculate Cv,Chi and their errors
-			//data = Stats.stats(sArray, N, Temp, W, kb);
-			M = Stats.updateM(l,W);
-			E = Stats.updateE(l,W,J);
-			// output stuff
-	                output.printf(" "+Temp+" "+data[0][0]+" "+data[0][1]+ " "+data[0][2]+" "+data[0][3]+" "+M+" "+E+" "+ndata+"\n");
+			data = Stats.stats(sArray, N, Temp, W, kb);
+			//M = Stats.updateM(l,W);
+			//E = Stats.updateE(l,W,J);
+			// output stuff, ignore first measurement
+			if ( T != 12){output.printf(" "+Temp+" "+data[0][0]+" "+data[0][1]+ " "+data[0][2]+" "+data[0][3]+" "+M+" "+E+" "+ndata+"\n");}
 		}		
 		output.close();	
 
