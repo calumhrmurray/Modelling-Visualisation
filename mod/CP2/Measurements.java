@@ -9,18 +9,19 @@ public class Measurements{
 	public static void phaseDiagram(int[][] l,final int W, final double p2 ,PrintWriter output){
 
 		// initialise doubles and ints for measurements
-		double I; double avFracI; double avI; double varI;
+		double I; double avI; double varI;
 		int ndata;
 		// number of measurements taken
-		int N = 30;
+		int N = 90;
 		// number of steps waiting for equilibrium
-		int wait = 10; 
+		int wait = 100; 
 		double[] sArray = new double[N];
 
 		// for measurements
 		// loop over a range of p1,p3
-		for (double p1=0;p1<1;p1+=0.01){
-		for (double p3=0;p3<1;p3+=0.01){
+		// less than 1.00001 due to loss of precision of the double
+		for (double p1=0;p1<1.00001;p1+=0.01){
+		for (double p3=0;p3<1.00001;p3+=0.01){
 			// needs to be initialised for every probability
 			l = Sirs.init(W);
                         // set measurements to zero each time around
@@ -36,6 +37,10 @@ public class Measurements{
 					if(i % 10 == 0){	
 						// take measurements and store them
 						sArray[ndata] = updateI(l,W);
+						// quit if no infected states to save time
+						if (sArray[ndata]==0){
+							i = wait+1+N*10;
+						}
 						ndata++;						
 					}
 				}
@@ -45,19 +50,7 @@ public class Measurements{
 			varI = getVariance(sArray,ndata);	
 			// output stuff
 	                output.printf(" "+p1+" "+p3+" "+avI+" "+varI+"\n");
-			      if (0.0999 < p1 && p1 < 0.1001 && p3 == 0
-			        ||0.1999 < p1 && p1 < 0.2001 && p3 ==0
-				||0.2999 < p1 && p1 < 0.3001 && p3 ==0
-				||0.3999 < p1 && p1 < 0.4001 && p3 ==0
-				||0.4999 < p1 && p1 < 0.5001 && p3 ==0
-				||0.5999 < p1 && p1 < 0.6001 && p3 ==0
-				||0.6999 < p1 && p1 < 0.7001 && p3 ==0
-				||0.7999 < p1 && p1 < 0.8001 && p3 ==0
-				||0.8999 < p1 && p1 < 0.9001 && p3 ==0){
-			System.out.println("Progress:" +p1); // nothing in array
-			}
-			if(0.9999 <p1 && p1 < 1.0001 && 0.9999 <p3 && p3 < 1.0001){System.out.println("Complete");}
-
+			counter(p1,p3);
 		}
 		// new line for new x values
 		output.printf("\n");
@@ -65,6 +58,60 @@ public class Measurements{
 		output.close();	
 
 	} 
+
+	// for each (p1,im) measure the fraction infected after some time
+	// graph infected(p1)
+	public static void immunityDiagram(int[][] l, final int W, final double p2, final double p3, PrintWriter output){
+
+		// number of measurements taken for each data point
+		int N = 90;
+		// number of steps waiting for equilibrium
+		int wait = 100; 
+	        // array to store measurements
+		double[] sArray = new double[N];
+
+		for (double im = 0; im<1.00001; im+=0.01){
+		for (double p1 = 0; p1<1.00001; p1+=0.01){
+
+			l = Sirs.initImmune(W,im);
+
+	        	// initialise doubles and ints for measurements
+			double I; double avI; double varI;
+			int ndata =0;	
+		        
+			//perform measurements
+			for (int i=0;i<(wait+1+N*10);i++){
+				l = Sirs.update(W,p1,p2,p3);		
+				// wait till equilibrium is reached
+				if(i>wait){
+					// take measurements every 10 steps
+					if(i % 10 == 0){	
+						// take measurements and store them
+						sArray[ndata] = updateI(l,W);
+						// if updateI == 0 quit, since nothing will change 
+						if (sArray[ndata]==0){
+							i = wait+1+N*10;
+						}
+						ndata++;						
+					}
+				}
+			}
+			// calculate Cv,Chi and their errors
+			avI = getMean(sArray,ndata);
+			varI = getVariance(sArray,ndata);	
+			// output stuff
+	                output.printf(" "+im+" "+p1+" "+avI+" "+varI+"\n");
+			counter(im,p1);
+			}
+		// new line for new x values
+		output.printf("\n");
+		}	
+
+		// loop over a range of p1
+		
+		output.close();	
+
+	}
 
 	public static void infectedTimeDiagram(int[][] l, final int W, final double p1, final double p2, final double p3,PrintWriter output){
 	double I;
@@ -83,66 +130,7 @@ public class Measurements{
 
 	}
 
-	// for each (p1,im) measure the fraction infected after some time
-	// graph infected(p1)
-	public static void immunityDiagram(int[][] l, final int W, final double p2, final double p3, PrintWriter output){
-
-		// number of measurements taken for each data point
-		int N = 30;
-		// number of steps waiting for equilibrium
-		int wait = 10; 
-	        // array to store measurements
-		double[] sArray = new double[N];
-
-		for (double im = 0; im<1; im+=0.1){
-		for (double p1 = 0; p1<1; p1+=0.1){
-
-			l = Sirs.initImmune(W,im);
-
-	        	// initialise doubles and ints for measurements
-			double I; double avI; double varI;
-			int ndata =0;	
-		        
-			//perform measurements
-			for (int i=0;i<(wait+1+N*10);i++){
-				l = Sirs.update(W,p1,p2,p3);		
-				// wait till equilibrium is reached
-				if(i>wait){
-					// take measurements every 10 steps
-					if(i % 10 == 0){	
-						// take measurements and store them
-						sArray[ndata] = updateI(l,W);
-						ndata++;						
-					}
-				}
-			}
-			// calculate Cv,Chi and their errors
-			avI = getMean(sArray,ndata);
-			varI = getVariance(sArray,ndata);	
-			// output stuff
-	                output.printf(" "+im+" "+p1+" "+avI+" "+varI+"\n");
-			      if (0.0999 < p1 && p1 < 0.1001 && im == 0
-			        ||0.1999 < p1 && p1 < 0.2001 && im ==0
-				||0.2999 < p1 && p1 < 0.3001 && im ==0
-				||0.3999 < p1 && p1 < 0.4001 && im ==0
-				||0.4999 < p1 && p1 < 0.5001 && im ==0
-				||0.5999 < p1 && p1 < 0.6001 && im ==0
-				||0.6999 < p1 && p1 < 0.7001 && im ==0
-				||0.7999 < p1 && p1 < 0.8001 && im ==0
-				||0.8999 < p1 && p1 < 0.9001 && im ==0){
-			System.out.println("\r Progress:" +p1); // nothing in array
-			}
-			if(0.9999 <p1 && p1 < 1.0001 && im == 0){System.out.println("\r Almost there...");}	
-			}
-		// new line for new x values
-		output.printf("\n");
-		}	
-
-		// loop over a range of p1
-		
-		output.close();	
-
-	}
+	
 
 	//----------------------------------------------------------------------
 	// methods acting on lattice
@@ -212,5 +200,20 @@ public class Measurements{
 	}
 
 	//----------------------------------------------------------------------
+
+	public static void counter(double a, double b){
+			      if (0.0999 < a && a < 0.1001 && b == 0
+			        ||0.1999 < a && a < 0.2001 && b ==0
+				||0.2999 < a && a < 0.3001 && b ==0
+				||0.3999 < a && a < 0.4001 && b ==0
+				||0.4999 < a && a < 0.5001 && b ==0
+				||0.5999 < a && a < 0.6001 && b ==0
+				||0.6999 < a && a < 0.7001 && b ==0
+				||0.7999 < a && a < 0.8001 && b ==0
+				||0.8999 < a && a < 0.9001 && b ==0){
+			System.out.println("\r Progress:" +a); // nothing in array
+			}
+			if(0.9999 <a && a < 1.0001 && b == 0){System.out.println("\r Almost there...");}	
+	}
 
 }

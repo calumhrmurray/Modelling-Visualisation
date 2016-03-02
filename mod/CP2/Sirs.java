@@ -14,9 +14,16 @@ public class Sirs{
 	//----------------------------------------------------------------------
 
 	static int[][] update(final int W, final double p1, final double p2, final double p3){
-		l = Rules.mcSweep(l,W,p1,p2,p3);
+		return Rules.mcSweep(l,W,p1,p2,p3);
+	}
+
+	static int[][] updateAnimate(final int W, final double p1, final double p2, final double p3){
+		int i = (int)(Math.random()*W);
+		int j = (int)(Math.random()*W);
+		l = Rules.Life(l,W,i,j,p1,p2,p3);
 	return l;
 	}
+
 	
 	// randomly initialises lattice equally S,I,R	
 	static int[][] init(final int W) {
@@ -81,8 +88,6 @@ public class Sirs{
 		}
 
 
-
-
 	}
 
 }
@@ -90,26 +95,28 @@ public class Sirs{
 
 /** Check list
 
-		check nearest neighbour calc (8 or 4?)
+		\/\/\//\/\check nearest neighbour calc (8 or 4?)\/\/\//\
 		check mcSweep
 		\/\/\/\//\/not sure about the phase diagram - contour plot etc.\/\/\/\/\/
 		\/\/\//\/\/\broken not changing susceptible ones to infected - issue with infection or nearestn\/\/\//\/
 		\/\/\/\/\/check initialisation\/\/\//\/\/\/\
-		why are p1 and p3 going up weirdly?
+		\/\/\/\/\why are p1 and p3 going up weirdly? - double precision\/\/\/\/\/
+		think more about whether to change p1 and p3 increment in measurements
 		\//\/\/\/\/include method for changeing number of immune cells into input\/\//\/\/\/\/\/
-		-corresponding graph
+		\/\/\/\/\/-corresponding graph\/\/\/\/\/\/
 		neaten up methods
-		make sure all the graphs have error bars
+		make sure all the graphs have error bars?
+		are all my units correct?
 
 */
 
 /** Ideas
 
 		\/\/\/\/could draw the time vs infection graph in a graphics box as the simulation is running, would look cool\/\//\/\
-		add start button
+		\/\/\/\/\/add start button\/\/\/\/\//
 		switch between initial states before clicking start
 		change % of immune cells before starting
-		choose whether to draw graph or not
+		\/\/\/\/\/\/\/choose whether to draw graph or not\/\/\/\/\/
 		add labels to graph legend	
 	
 

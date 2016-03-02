@@ -26,32 +26,38 @@ class Animate {	// -------------------------------------------------------------
 			bi.setRGB(i, j, l[i][j]== -1 ? Color.GREEN.getRGB() : 
 					l[i][j]== 0 ? Color.BLUE.getRGB() :
 					l[i][j]== 1 ? Color.RED.getRGB() : Color.WHITE.getRGB());}}
-			String I = Double.valueOf(Measurements.updateI(l,W)).toString();
-			String R = Double.valueOf(Measurements.updateR(l,W)).toString();
-			String S = Double.valueOf(Measurements.updateS(l,W)).toString();
-			String T = Double.valueOf(t).toString();
-			if(drawGraph){
-			try{dynamicplot.startPlot(T,I,R,S);} catch (Exception e) {System.out.println("Unable to update plot");}
-			t++;	
-			}		
+			//String I = Double.valueOf(Measurements.updateI(l,W)).toString();
+			//String R = Double.valueOf(Measurements.updateR(l,W)).toString();
+			//String S = Double.valueOf(Measurements.updateS(l,W)).toString();
+			//String T = Double.valueOf(t).toString();
+			//if(drawGraph){
+			//try{dynamicplot.startPlot(T,I,R,S);} catch (Exception e) {System.out.println("Unable to update plot");}
+			//t++;	
+			//}		
 	}
 
-	
+	static int green = Color.GREEN.getRGB();
+	static int blue = Color.BLUE.getRGB();
+	static int red = Color.RED.getRGB();
+	static int white = Color.WHITE.getRGB();
 
 	static void update(final BufferedImage bi, final int W,final double p1, final double p2, final double p3) {		
 			int[][] l = Smodel.update(W,p1,p2,p3); 
 			for (int i = 0; i < W; i++){
 			for (int j = 0; j < W; j++){
-			bi.setRGB(i, j, l[i][j]== -1 ? Color.GREEN.getRGB() : 
-					l[i][j]== 0 ? Color.BLUE.getRGB() :
-					l[i][j]== 1 ? Color.RED.getRGB() : Color.WHITE.getRGB());}}
-			String I = Double.valueOf(Measurements.updateI(l,W)).toString();
-			String R = Double.valueOf(Measurements.updateR(l,W)).toString();
-			String S = Double.valueOf(Measurements.updateS(l,W)).toString();
-			String T = Double.valueOf(t).toString();
-			try{dynamicplot.updatePlot(T,I,R,S);} catch (Exception e) {System.out.println("Unable to update plot");}
-			t++;
+			int a = l[i][j]; 
+			bi.setRGB(i, j, a == -1 ? green : 
+					a == 0 ? blue :
+					a == 1 ? red : white);}}
+			//String I = Double.valueOf(Measurements.updateI(l,W)).toString();
+			//String R = Double.valueOf(Measurements.updateR(l,W)).toString();
+			//String S = Double.valueOf(Measurements.updateS(l,W)).toString();
+			//String T = Double.valueOf(t).toString();
+			//try{dynamicplot.updatePlot(T,I,R,S);} catch (Exception e) {System.out.println("Unable to update plot");}
+			//t++;
 	}
+
+
 	
 
 	//----------------------------------------------------------------------
