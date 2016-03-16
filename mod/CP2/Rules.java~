@@ -7,18 +7,11 @@ public class Rules{
 
 	//----------------------------------------------------------------------
 
-	public static int[][] parallelUpdate(int[][] l, int W, double p1, double p2, double p3){
-		for (int i=0; i<W; i++){
-		for (int j=0; j<W; j++){l = Life(l,W,i,j,p1,p2,p3);}}
-	return l;
-	}
-
 	public static int[][] mcSweep(int[][] l, int W, double p1, double p2, double p3){
 		// randomly choose N lattice sites update lattice after each time
 		for(int x=0; x<W*W; x++){
 					int i = (int)(Math.random()*W);
 					int j = (int)(Math.random()*W);
-					// is this correct?
 					l = Life(l,W,i,j,p1,p2,p3);
 					}
 	
@@ -50,16 +43,16 @@ public class Rules{
 	static int Infection(int[][] l, int x, int y, int W){
 		int n = 0;
 		// mod corrects for boundary conditions
-		if (l[x==W?0:(x+1)][y]==-1){
+		if (l[x==W-1?0:(x+1)][y]==-1){
 		n++;		
 		}
-		else if (l[x][y==W?0:(y+1)]==-1){
+		else if (l[x][y==W-1?0:(y+1)]==-1){
 		n++;		
 		}
-		else if (l[x==0?W:(x-1)][y]==-1){
+		else if (l[x==0?W-1:(x-1)][y]==-1){
 		n++;		
 		}
-		else if (l[x][y==0?W:(y-1)]==-1){
+		else if (l[x][y==0?W-1:(y-1)]==-1){
 		n++;		
 		}
 
