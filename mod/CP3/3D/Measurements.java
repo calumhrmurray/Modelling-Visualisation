@@ -14,7 +14,7 @@ public class Measurements{
 		for (int i=0; i<W; i++){
 		for (int j=0; j<W; j++){ 
 		for (int k=0; k<W; k++){
-	        output.printf(" "+mag(i,j,k,50,50,50)+" "+c[i][j][k]+"\n");			
+	        output.printf(" "+mag(i,j,k,500,500,500)+" "+c[i][j][k]+"\n");			
 		}}}
 	} 
 

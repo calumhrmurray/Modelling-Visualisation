@@ -1,0 +1,47 @@
+
+
+*******************************************************************************
+Fri Mar 18 18:25:23 2016
+
+
+FIT:    data read from "field.data" u (log($1)):(log($2))
+        format = x:z
+	y range restricted to [0.500000 : 2.50000]
+        #datapoints = 7502
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+fitted parameters initialized with current variable values
+
+
+
+ Iteration 0
+ WSSR        : 100705            delta(WSSR)/WSSR   : 0
+ delta(WSSR) : 0                 limit for stopping : 1e-05
+ lambda	  : 1.70406
+
+initial set of free parameter values
+
+a               = 1
+b               = 1
+
+After 3 iterations the fit converged.
+final sum of squares of residuals : 3.92391
+rel. change during last iteration : -3.64166e-09
+
+degrees of freedom    (FIT_NDF)                        : 7500
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0228733
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.000523187
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+
+a               = -1.27761         +/- 0.000831     (0.06505%)
+b               = 2.34969          +/- 0.001822     (0.07755%)
+
+
+correlation matrix of the fit parameters:
+
+               a      b      
+a               1.000 
+b              -0.989  1.000 
