@@ -37,7 +37,10 @@ public class PDE{
 	}
 
 	static void update(final int W){
-		for( int i=0; i<1000; i++){jacobi(W);}		
+		for( int i=0; i<1000; i++){
+						jacobi(W);
+						//gaussSe(W);		
+						}		
 	}
 
 	//----------------------------------------------------------------------
@@ -73,15 +76,18 @@ public class PDE{
       		double[] field = new double[2];
 		double x = 0; double y = 0;
 		// with boundary conditions
-		x = -(array[i+1][j][k]+array[i==0?W:i-1][j][k]-2*array[i][j][k])/(deltaX*deltaX);
-		y = -(array[i][j+1][k]+array[i][j==0?W:j-1][k]-2*array[i][j][k])/(deltaX*deltaX);
+		//x = -(array[i+1][j][k]+array[i==0?W:i-1][j][k]-2*array[i][j][k])/(deltaX*deltaX); don't understand why I did this initially
+		//y = -(array[i][j+1][k]+array[i][j==0?W:j-1][k]-2*array[i][j][k])/(deltaX*deltaX);
+		x = -(array[i+1][j][k]-array[i==0?W:i-1][j][k])/(2*deltaX);
+		y = -(array[i][j+1][k]-array[i][j==0?W:j-1][k])/(2*deltaX);
+		//z = (array[i][j][k+1]-array[i][j][k==0?W:k-1])/(2*deltaX);
 		// magnitude of the field
 		// all need to be between 0 and 1
 		// length	
 		field[0] = Math.sqrt(x*x+y*y);
 		// angle
 		// check this is in radians
-		field[1] = Math.acos((x+y)/(Math.sqrt(x*x)+Math.sqrt(y*y)));
+		field[1] = Math.acos((y)/(Math.sqrt(x*x)+Math.sqrt(y*y)));
 		return field;		
 		
 	}
@@ -97,8 +103,24 @@ public class PDE{
 		for (int i=0; i<W; i++){
 		for (int j=0; j<W; j++){ 
 		for (int k=0; k<W; k++){
-	        output.printf(" "+mag(i,j,k,(int)Math.round(W/2),(int)Math.round(W/2),(int)Math.round(W/2))+" "+c[i][j][k]+"\n");			
-		}}}
+	        output.printf(" "+mag(i,j,k,(int)Math.round(W/2),(int)Math.round(W/2),(int)Math.round(W/2))+" "+c[i][j][k]+" "+i+" "+j+" "+k+"\n");			
+		}}
+		output.printf("\n");}
+	} 
+
+	static void hfieldMeasurements(final int W, PrintWriter output){
+		for (int i=0;i<1000;i++){
+			PDE.jacobi(W);
+		}	
+		
+		int k = 50;
+	
+		// records |E| at |r| for every lattice site
+		for (int i=0; i<W; i++){
+		for (int j=0; j<W; j++){ 
+	        output.printf(" "+mag(i,j,k,(int)Math.round(W/2),(int)Math.round(W/2),(int)Math.round(W/2))+" "+c[i][j][k]+" "+i+" "+j+" "+k+"\n");			
+		}
+		output.printf("\n");}
 	} 
 
 	static void GafieldMeasurements(final int W, PrintWriter output){
@@ -110,7 +132,8 @@ public class PDE{
 		for (int j=0; j<W; j++){ 
 		for (int k=0; k<W; k++){
 	        output.printf(" "+mag(i,j,k,(int)Math.round(W/2),(int)Math.round(W/2),(int)Math.round(W/2))+" "+c[i][j][k]+"\n");			
-		}}}
+		}}
+		output.printf("\n");}
 	} 
 
 	static void efieldMeasurements(final int W, PrintWriter output){
@@ -189,6 +212,10 @@ public class PDE{
 		filename = "Gfield.data"; 
 		PrintWriter output = new PrintWriter(new FileWriter(filename));  
 		GafieldMeasurements(W,output);
+		} else if (out == 5){
+		filename = "hfield.data"; 
+		PrintWriter output = new PrintWriter(new FileWriter(filename));  
+		hfieldMeasurements(W,output);
 		}
 	}
 

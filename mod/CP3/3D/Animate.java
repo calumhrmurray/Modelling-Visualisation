@@ -11,7 +11,7 @@ class Animate {	// -------------------------------------------------------------
 
 	static PDE Pmodel = new PDE();
 	// k slice observing
-	static int z = 15; // change this variable
+	static int z = 25; // change this variable
 	// number of pixels per arrow
 	static int sq = 21;
 	static int sq2 = 10;
@@ -40,6 +40,7 @@ class Animate {	// -------------------------------------------------------------
 					     field = PDE.eField(c,x,y,z,W);
 					     xP = x*sq;
 					     yP = y*sq;		
+					     //each point in the original array corresponds to a 21x21 drawn in the graphics
 					     for (int i = 0; i < sq; i++){
 					     for (int j = 0; j < sq; j++){ bi.setRGB(xP+i, yP+j, new Color(colour,colour,colour).getRGB());}} 
 					     drawArrow(g, xP+sq2, yP+sq2, 5, field[1]); }}	

@@ -11,7 +11,7 @@ class Animate {	// -------------------------------------------------------------
 
 	static PDE Pmodel = new PDE();
 	// k slice observing
-	static int z = 15;
+	static int z = 25; // change this variable
 	// number of pixels per arrow
 	static int sq = 21;
 	static int sq2 = 10;
