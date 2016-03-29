@@ -40,9 +40,8 @@ public class Sirs{
 		for (int i=0; i<W; i++){
 		for (int j=0; j<W; j++){ l[i][j] = 0; // default susceptible (do not want unitialised state)
 					if (Math.random()<Im){l[i][j]=2;} // immune
-				        if (Math.random()<p){l[i][j]=1;}
-				        if (Math.random()<p){l[i][j]=0;}
-				        if (Math.random()<p){l[i][j]=-1;}}}
+					else {l[i][j] = (int) (Math.random()*3) - 1;}
+					}}
 	return l;
 	}
 

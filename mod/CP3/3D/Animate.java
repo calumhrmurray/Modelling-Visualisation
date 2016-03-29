@@ -10,21 +10,22 @@ import java.util.TimerTask;
 class Animate {	// -------------------------------------------------------------
 
 	static PDE Pmodel = new PDE();
-	// k slice observing
-	static int z = 25; // change this variable
 	// number of pixels per arrow
 	static int sq = 21;
 	static int sq2 = 10;
 
-	static final double tPI = 2.0*Math.PI;
-	static void init(final BufferedImage bi, final int W) {
-		Pmodel.update(W);
+	static final double tPI = Math.PI;
+	static void init(final BufferedImage bi, final int W, final double acc) {
+		Pmodel.init(W);
+		Pmodel.update(W,acc);
 		double[][][] c = Pmodel.getPhiArray();
 		int colour = 0;
 		int xP = 0;
 		int yP = 0;
 		double maxPo = 0; 
 		maxPo = maxPot(W);
+		double minPo = 0;
+		minPo = minPot(W);
 
 		// arrows
 		double maxLe = 0;
@@ -36,8 +37,8 @@ class Animate {	// -------------------------------------------------------------
 
 		// print image	
 		for (int x = 0; x < W; x++){
-		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*c[x][y][z]/maxPo); 
-					     field = PDE.eField(c,x,y,z,W);
+		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*(c[x][y][(int)Math.round(W/2)]-minPo)/(maxPo-minPo));  
+					     field = PDE.eField(c,x,y,(int)Math.round(W/2),W);
 					     xP = x*sq;
 					     yP = y*sq;		
 					     //each point in the original array corresponds to a 21x21 drawn in the graphics
@@ -47,35 +48,7 @@ class Animate {	// -------------------------------------------------------------
 	}
   //5*field[0]/maxLe
 
-	static void update(final BufferedImage bi, final int W) {
-		Pmodel.jacobi(W); 
-		double[][][] c = Pmodel.getPhiArray();
-		int colour = 0;
-		int xP = 0;
-		int yP = 0;
-		double maxPo = 0; 
-		maxPo = maxPot(W);
-
-		// arrows
-		double maxLe = 0;
-		maxLe = maxLen(W);
-		final int w = bi.getWidth();
-		final int h = bi.getHeight();
-		final Graphics2D g = bi.createGraphics();
-      		double[] field = new double[2];
-
-		// print image	
-		for (int x = 0; x < W; x++){
-		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*c[x][y][z]/maxPo); 
-					     field = PDE.eField(c,x,y,z,W);
-					     xP = x*sq;
-					     yP = y*sq;		
-					     for (int i = 0; i < sq; i++){
-					     for (int j = 0; j < sq; j++){ bi.setRGB(xP+i, yP+j, new Color(colour,colour,colour).getRGB());}} 
-					     drawArrow(g, xP, yP, 5, tPI); }}
-
-	}
-
+	
 	//----------------------------------------------------------------------
 	// scaling methods 
 
@@ -91,6 +64,16 @@ class Animate {	// -------------------------------------------------------------
 		for(int k=0; k< W; k++){if(c[i][j][k] > max){max = c[i][j][k];}}}}
 		return max;
 	}
+
+	static double minPot(final int W) {
+		double[][][] c = Pmodel.getPhiArray(); 
+                double min = 0;               
+                for(int i=0; i< W; i++){
+		for(int j=0; j< W; j++){
+		for(int k=0; k< W; k++){if(c[i][j][k] < min){min = c[i][j][k];}}}}
+		return min;
+	}
+
 
 	// find max field vector values ignoring value at the point charge
 	static double maxLen(final int W) {
@@ -111,8 +94,8 @@ class Animate {	// -------------------------------------------------------------
 	public static void main(final String[] args) throws Exception {
 		if (args.length != 3) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
 		final int W = Integer.parseInt(args[0]);
-		final int acc = Integer.parseInt(args[1]);
-		final int out = Integer.parseInt(args[2]);	
+		final double acc = Double.parseDouble(args[1]); // input for convergence
+		final int out = Integer.parseInt(args[2]); // output choice	
 		
 		final int imW = sq*W;
 	
@@ -126,7 +109,7 @@ class Animate {	// -------------------------------------------------------------
 		f.setExtendedState(Frame.MAXIMIZED_BOTH);
 		f.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent we) {System.exit(0);}});
 
-		init(bi,W);
+		init(bi,W,acc);
 		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {f.getGraphics().drawImage(bi, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);}}}, 0, 1);
 		//new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {update(bi,W);}}}, 0, 1);
 	}
@@ -146,8 +129,39 @@ class Animate {	// -------------------------------------------------------------
  	   }
 }
 
+	//----------------------------------------------------------------------
+/*
+static void update(final BufferedImage bi, final int W, final int acc) {
+		Pmodel.jacobi(W); 
+		double[][][] c = Pmodel.getPhiArray();
+		int colour = 0;
+		int xP = 0;
+		int yP = 0;
+		double maxPo = 0; 
+		maxPo = maxPot(W);
+		double minPo = 0;
+		minPo = minPot(W);
 
+		// arrows
+		double maxLe = 0;
+		maxLe = maxLen(W);
+		final int w = bi.getWidth();
+		final int h = bi.getHeight();
+		final Graphics2D g = bi.createGraphics();
+      		double[] field = new double[2];
 
+		// print image	
+		for (int x = 0; x < W; x++){
+		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*(c[x][y][(int)Math.round(W/2)]-minPo)/(maxPo+minPo)); 
+					     field = PDE.eField(c,x,y,(int)Math.round(W/2),W);
+					     xP = x*sq;
+					     yP = y*sq;		
+					     for (int i = 0; i < sq; i++){
+					     for (int j = 0; j < sq; j++){ bi.setRGB(xP+i, yP+j, new Color(colour,colour,colour).getRGB());}} 
+					     drawArrow(g, xP, yP, 5, tPI); }}
+
+	}
+*/
 
 
 

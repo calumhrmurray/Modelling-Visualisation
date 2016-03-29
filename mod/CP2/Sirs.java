@@ -30,7 +30,7 @@ public class Sirs{
 	static int[][] init(final int W) {
 		for (int i=0; i<W; i++){
 		for (int j=0; j<W; j++){ l[i][j] = (int) (Math.random()*3) - 1; }}
-			
+		
          return l;	
 	}
 
