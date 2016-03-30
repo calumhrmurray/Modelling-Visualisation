@@ -16,8 +16,9 @@ class Animate {	// -------------------------------------------------------------
 
 	static final double tPI = Math.PI;
 	static void init(final BufferedImage bi, final int W, final double acc) {
+		int mid = (int)Math.round(W/2);
 		Pmodel.init(W);
-		Pmodel.update(W,acc);
+		Pmodel.update(W,acc,2);
 		double[][][] c = Pmodel.getPhiArray();
 		int colour = 0;
 		int xP = 0;
@@ -37,14 +38,15 @@ class Animate {	// -------------------------------------------------------------
 
 		// print image	
 		for (int x = 0; x < W; x++){
-		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*(c[x][y][(int)Math.round(W/2)]-minPo)/(maxPo-minPo));  
-					     field = PDE.eField(c,x,y,(int)Math.round(W/2),W);
+		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*(c[x][y][mid]-minPo)/(maxPo-minPo));  
+					     //field = PDE.eField(c,x,y,mid,W);
+					     field = PDE.mField(c,x,y,mid,W);	
 					     xP = x*sq;
 					     yP = y*sq;		
 					     //each point in the original array corresponds to a 21x21 drawn in the graphics
 					     for (int i = 0; i < sq; i++){
 					     for (int j = 0; j < sq; j++){ bi.setRGB(xP+i, yP+j, new Color(colour,colour,colour).getRGB());}} 
-					     drawArrow(g, xP+sq2, yP+sq2, 5, field[1]); }}	
+					     drawArrow(g, xP+sq2, yP+sq2, 10, field[1]); }}	
 	}
   //5*field[0]/maxLe
 
@@ -75,7 +77,7 @@ class Animate {	// -------------------------------------------------------------
 	}
 
 
-	// find max field vector values ignoring value at the point charge
+	// find max field vector value
 	static double maxLen(final int W) {
 		double[][][] c = Pmodel.getPhiArray(); 
 		double maxL = 0; 
