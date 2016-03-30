@@ -18,7 +18,7 @@ class Animate {	// -------------------------------------------------------------
 	static void init(final BufferedImage bi, final int W, final double acc) {
 		int mid = (int)Math.round(W/2);
 		Pmodel.init(W);
-		Pmodel.update(W,acc,2);
+		Pmodel.update(W,acc,0);
 		double[][][] c = Pmodel.getPhiArray();
 		int colour = 0;
 		int xP = 0;

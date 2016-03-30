@@ -29,7 +29,7 @@ public class PDE{
 		for (int i=0; i<W+1; i++){
 		for (int j=0; j<W+1; j++){ 
 		for (int k=0; k<W+1; k++){p[i][j][k] = 0;}}} 
-		p[mid][mid][mid] = 10000;
+		p[mid][mid][mid] = 1000000;
 		return p;
 	}
 
@@ -127,72 +127,98 @@ public class PDE{
 	}
 
 	static void update(final int W, final double acc, int choice){
-		double error = acc;
-		for (int i=0; i<1000; i++){
-					if (choice==0){
-					jacobi(W);
-					System.out.printf("Using: Jacobi  Trials: "+i+ "\r");
-					} else if (choice==1){
-					gaussSe(W);
-					System.out.printf("Using: Gauss Seidel  Trials: "+i+" \r");
-					} else if (choice==2){
-					SORgauss(W);
-					System.out.printf("Using: SOR  Trials: "+i+" \r");
-					}
-		}							
+		double error = acc+1;
+		int i = 0;
+		while(error>acc){
+			i++;
+			if (choice==0){
+				error = jacobi(W);
+				System.out.printf("Using: Jacobi  Trials: "+i+ "\r");
+			} else if (choice==1){
+				error = gaussSe(W);
+				System.out.printf("Using: Gauss Seidel  Trials: "+i+" \r");
+			} else if (choice==2){
+				error = SORgauss(W,1.2);
+				System.out.printf("Using: SOR  Trials: "+i+" \r");
+			}
+			if (i>100){
+				break;
+			}
+		}	
 	}
 
 	//----------------------------------------------------------------------
 	// algorithms 	
 	
-	static void jacobi(final int W){
+	// why didn't it work without the placemarker?
+	static double jacobi(final int W){
 		double[][][] arrayPrime = c;
+		double placemarker = 0;
 		double sum = 0;
 		for (int i=0; i<W; i++){
 		for (int j=0; j<W; j++){
-		for (int k=0; k<W; k++){arrayPrime[i][j][k] = (c[i+1][j][k]+c[i==0?W:i-1][j][k]   // if an array element on the boundary is called value will be zero
+		for (int k=0; k<W; k++){placemarker = (c[i+1][j][k]+c[i==0?W:i-1][j][k]   // if an array element on the boundary is called value will be zero
 									+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
 									+c[i][j][k+1]+c[i][j][k==0?W:k-1]
 									+deltaX*deltaX*p[i][j][k])/6;
+					sum += Math.abs(placemarker - arrayPrime[i][j][k]); 
+					arrayPrime[i][j][k] = placemarker;
 					;}}}
-		sum = Math.sqrt((arrayPrime[26][26][26]-c[26][26][26])*(arrayPrime[26][26][26]-c[26][26][26]));
 		c = arrayPrime;
-		System.out.printf("SUM: "+sum+" ");
+		System.out.printf("Error: "+sum/(W*W*W)+" ");
+		return sum/(W*W*W);
 	}
 
 	// is this correct for k?	
-	static void gaussSe(final int W){
+	static double gaussSe(final int W){
+		double placemarker = 0;
+		double sum = 0;
 
 		for (int i=0; i<W; i+=1){
 		for (int j=0; j<W; j+=1){
-		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 0) c[i][j][k]=(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
+		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 0) placemarker=(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
 									+c[i][j][k+1]+c[i][j][k==0?W:k-1]
-									+deltaX*deltaX*p[i][j][k])/6;}}} 
+									+deltaX*deltaX*p[i][j][k])/6;
+								sum += Math.abs(placemarker-c[i][j][k]);
+								c[i][j][k] = placemarker;
+								}}} 
 		for (int i=0; i<W; i+=1){
 		for (int j=0; j<W; j+=1){
-		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 1) c[i][j][k]=(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
+		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 1) placemarker=(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
 									+c[i][j][k+1]+c[i][j][k==0?W:k-1]
-									+deltaX*deltaX*p[i][j][k])/6;}}}
-
+									+deltaX*deltaX*p[i][j][k])/6;
+								sum += Math.abs(placemarker-c[i][j][k]);
+								c[i][j][k] = placemarker;
+								}}}
+		
+		System.out.printf("Error: "+sum/(W*W*W)+" ");
+		return sum/(W*W*W);
 	}
 
 
-	static void SORgauss(final int W){
-
-		double omega = 1.2;
+	static double SORgauss(final int W, double omega){
+		double placemarker = 0;
+		double sum = 0;
 
 		for (int i=0; i<W; i+=1){
 		for (int j=0; j<W; j+=1){
-		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 0) c[i][j][k]=(1-omega)*c[i][j][k]+omega*(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k]
+		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 0) placemarker=(1-omega)*c[i][j][k]+omega*(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k]
 									+c[i][j][k+1]+c[i][j][k==0?W:k-1]
-									+deltaX*deltaX*p[i][j][k])/6;}}} 
+									+deltaX*deltaX*p[i][j][k])/6;
+								sum += Math.abs(placemarker-c[i][j][k]);
+								c[i][j][k] = placemarker;
+								}}} 
 		for (int i=0; i<W; i+=1){
 		for (int j=0; j<W; j+=1){
-		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 1) c[i][j][k]=(1-omega)*c[i][j][k]+omega*(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
+		for (int k=0; k<W; k+=1){if ((i+j+k) % 2 != 1) placemarker=(1-omega)*c[i][j][k]+omega*(c[i+1][j][k]+c[i==0?W:i-1][j][k]+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
 									+c[i][j][k+1]+c[i][j][k==0?W:k-1]
-									+deltaX*deltaX*p[i][j][k])/6;}}}
+									+deltaX*deltaX*p[i][j][k])/6;
+								sum += Math.abs(placemarker-c[i][j][k]);
+								c[i][j][k] = placemarker;
+								}}}
 
-		
+		System.out.printf("Error: "+sum/(W*W*W)+" ");
+		return 2*sum/(W*W*W);		
 	}
 
 	//----------------------------------------------------------------------
@@ -260,20 +286,6 @@ public class PDE{
 		output.printf("\n");}
 	} 
 
-
-	static void efieldMeasurements(final int W, PrintWriter output){
-		for (int i=0;i<100;i++){
-			PDE.jacobi(W);
-		}
-		double[] field = new double[2];
-		int mid = (int)Math.round(W/2);
-		// records |E| at |r| for every lattice site
-		for (int i=0; i<W; i++){
-		for (int j=0; j<W; j++){ 
-		field = eField(c,i,j,mid,W);
-	        output.printf(" "+mag(i,j,mid,mid,mid,mid)+" "+i+" "+j+" "+mid+" "+field[0]+" "+field[1]+"\n");			
-		}}
-	} 
 
 	// |r| calculator
 	static double mag(int i,int j,int k,int x,int y,int z){
@@ -368,10 +380,12 @@ public class PDE{
 		***Check that the angle is in correct units***
 		****am I okay initilising arrayPrime the way I do?****
 		sort out the for loop in the efield calculator
-		add acc thing
-		sort out the angles!!
-		move on to magnetics
-		laugh
+		****add acc thing*****
+		*****sort out the angles!!****
+		****move on to magnetics******
+		*****laugh*******
+		calculate convergence times
+		get rid of arrrows at the point charges
 
 
 								  (1/6)*(array[i+1][j][k]+array[i==0?W:i-1][j][k]
@@ -395,7 +409,19 @@ public class PDE{
 
 
 
-
+	static void efieldMeasurements(final int W, PrintWriter output){
+		for (int i=0;i<100;i++){
+			PDE.jacobi(W);
+		}
+		double[] field = new double[2];
+		int mid = (int)Math.round(W/2);
+		// records |E| at |r| for every lattice site
+		for (int i=0; i<W; i++){
+		for (int j=0; j<W; j++){ 
+		field = eField(c,i,j,mid,W);
+	        output.printf(" "+mag(i,j,mid,mid,mid,mid)+" "+i+" "+j+" "+mid+" "+field[0]+" "+field[1]+"\n");			
+		}}
+	} 
 
 
 
