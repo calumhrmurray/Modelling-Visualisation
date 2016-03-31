@@ -15,7 +15,7 @@ class Animate {	// -------------------------------------------------------------
 	static int sq2 = 10;
 
 	static final double tPI = Math.PI;
-	static void init(final BufferedImage bi, final int W, final double acc) {
+	static void init(final BufferedImage bi, final int W, final double acc, final int alg) {
 		int mid = (int)Math.round(W/2);
 		Pmodel.init(W);
 		Pmodel.update(W,acc,alg);
@@ -39,8 +39,8 @@ class Animate {	// -------------------------------------------------------------
 		// print image	
 		for (int x = 0; x < W; x++){
 		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*(c[x][y][mid]-minPo)/(maxPo-minPo));  
-					     //field = PDE.eField(c,x,y,mid,W);
-					     field = PDE.mField(c,x,y,mid,W);	
+					     field = PDE.eField(c,x,y,mid,W);
+					     //field = PDE.mField(c,x,y,mid,W);	
 					     xP = x*sq;
 					     yP = y*sq;		
 					     //each point in the original array corresponds to a 21x21 drawn in the graphics
@@ -94,11 +94,12 @@ class Animate {	// -------------------------------------------------------------
 	//----------------------------------------------------------------------
 
 	public static void main(final String[] args) throws Exception {
-		if (args.length != 4) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
+		if (args.length != 5) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
 		final int W = Integer.parseInt(args[0]);
 		final double acc = Double.parseDouble(args[1]); // input for convergence
 		final int out = Integer.parseInt(args[2]); // output choice	
 		final int alg = Integer.parseInt(args[3]); // output choice
+		final int ch = Integer.parseInt(args[4]); // output choice
 		
 		final int imW = sq*W;
 	
@@ -112,7 +113,7 @@ class Animate {	// -------------------------------------------------------------
 		f.setExtendedState(Frame.MAXIMIZED_BOTH);
 		f.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent we) {System.exit(0);}});
 
-		init(bi,W,acc,alg);
+		init(bi,W,acc,alg,ch);
 		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {f.getGraphics().drawImage(bi, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);}}}, 0, 1);
 		//new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {update(bi,W);}}}, 0, 1);
 	}
