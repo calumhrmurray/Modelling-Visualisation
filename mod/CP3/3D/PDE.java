@@ -133,15 +133,15 @@ public class PDE{
 			i++;
 			if (choice==0){
 				error = jacobi(W);
-				System.out.printf("Using: Jacobi  Trials: "+i+ "\r");
+				System.out.printf("Using: Jacobi  Trials: "+i+ "  Error: "+error+" \r");
 			} else if (choice==1){
 				error = gaussSe(W);
-				System.out.printf("Using: Gauss Seidel  Trials: "+i+" \r");
+				System.out.printf("Using: Gauss Seidel  Trials: "+i+"  Error: "+error+" \r");
 			} else if (choice==2){
 				error = SORgauss(W,1.2);
-				System.out.printf("Using: SOR  Trials: "+i+" \r");
+				System.out.printf("Using: SOR  Trials: "+i+"  Error: "+error+" \r");
 			}
-			if (i>100){
+			if (i>300){
 				break;
 			}
 		}	
@@ -161,11 +161,10 @@ public class PDE{
 									+c[i][j+1][k]+c[i][j==0?W:j-1][k] 
 									+c[i][j][k+1]+c[i][j][k==0?W:k-1]
 									+deltaX*deltaX*p[i][j][k])/6;
-					sum += Math.abs(placemarker - arrayPrime[i][j][k]); 
+					sum += Math.abs(placemarker-c[i][j][k])/(placemarker);
 					arrayPrime[i][j][k] = placemarker;
 					;}}}
 		c = arrayPrime;
-		System.out.printf("Error: "+sum/(W*W*W)+" ");
 		return sum/(W*W*W);
 	}
 
@@ -191,7 +190,6 @@ public class PDE{
 								c[i][j][k] = placemarker;
 								}}}
 		
-		System.out.printf("Error: "+sum/(W*W*W)+" ");
 		return sum/(W*W*W);
 	}
 
@@ -217,8 +215,7 @@ public class PDE{
 								c[i][j][k] = placemarker;
 								}}}
 
-		System.out.printf("Error: "+sum/(W*W*W)+" ");
-		return 2*sum/(W*W*W);		
+		return sum/(W*W*W);		
 	}
 
 	//----------------------------------------------------------------------
@@ -286,6 +283,11 @@ public class PDE{
 		output.printf("\n");}
 	} 
 
+	static void conRun(final int W, final double acc, int choice){
+		int mid = (int)Math.round(W/2);
+		update(W,acc,choice);	
+
+	}
 
 	// |r| calculator
 	static double mag(int i,int j,int k,int x,int y,int z){
@@ -320,10 +322,11 @@ public class PDE{
 	//----------------------------------------------------------------------
 
 	public static void main(final String[] args) throws Exception {
-		if (args.length != 3) throw new Exception("Arguments: width[pixels] height[pixels] T[]");
+		if (args.length != 4) throw new Exception("Arguments: width[pixels] height[pixels] T[]");
 		final int W = Integer.parseInt(args[0]);
 		final double acc = Double.parseDouble(args[1]); // input for convergence
 		final int out = Integer.parseInt(args[2]); // output choice
+		final int alg = Integer.parseInt(args[3]); // output choice
 
 		c = new double[W+1][W+1][W+1];
 		p = new double[W+1][W+1][W+1];		
@@ -362,7 +365,11 @@ public class PDE{
 		filename = "qfield.data"; 
 		PrintWriter output = new PrintWriter(new FileWriter(filename));  
 		fieldMeasurements(W,acc,1,output);
-		} 
+		} else if (out == 4){
+		pointCharge(W);
+		init(W);
+		conRun(W,acc,alg);
+		}
 	}
 
 }

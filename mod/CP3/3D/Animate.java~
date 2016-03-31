@@ -18,7 +18,7 @@ class Animate {	// -------------------------------------------------------------
 	static void init(final BufferedImage bi, final int W, final double acc) {
 		int mid = (int)Math.round(W/2);
 		Pmodel.init(W);
-		Pmodel.update(W,acc,2);
+		Pmodel.update(W,acc,alg);
 		double[][][] c = Pmodel.getPhiArray();
 		int colour = 0;
 		int xP = 0;
@@ -94,10 +94,11 @@ class Animate {	// -------------------------------------------------------------
 	//----------------------------------------------------------------------
 
 	public static void main(final String[] args) throws Exception {
-		if (args.length != 3) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
+		if (args.length != 4) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
 		final int W = Integer.parseInt(args[0]);
 		final double acc = Double.parseDouble(args[1]); // input for convergence
 		final int out = Integer.parseInt(args[2]); // output choice	
+		final int alg = Integer.parseInt(args[3]); // output choice
 		
 		final int imW = sq*W;
 	
@@ -111,7 +112,7 @@ class Animate {	// -------------------------------------------------------------
 		f.setExtendedState(Frame.MAXIMIZED_BOTH);
 		f.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent we) {System.exit(0);}});
 
-		init(bi,W,acc);
+		init(bi,W,acc,alg);
 		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {f.getGraphics().drawImage(bi, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);}}}, 0, 1);
 		//new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {update(bi,W);}}}, 0, 1);
 	}
