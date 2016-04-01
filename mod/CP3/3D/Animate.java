@@ -15,21 +15,28 @@ class Animate {	// -------------------------------------------------------------
 	static int sq2 = 10;
 
 	static final double tPI = Math.PI;
+	// creates buffered image displaying potential and field lines
 	static void init(final BufferedImage bi, final int W, final double acc, final int alg, final int ch) {
 		int mid = (int)Math.round(W/2);
+		// initialises model
 		Pmodel.init(W);
+		// runs update
 		Pmodel.update(W,acc,alg);
+		// gets c the potential array
 		double[][][] c = Pmodel.getPhiArray();
 		int colour = 0;
 		int xP = 0;
 		int yP = 0;
-		double maxPo = 0; 
+		double maxPo = 0;
+		// finds potential maximum used for the colour scale 
 		maxPo = maxPot(W);
 		double minPo = 0;
+		// finds potential minimum used for the colour scale 
 		minPo = minPot(W);
 
 		// arrows
 		double maxLe = 0;
+		// not used as the difference in lengths is too great
 		maxLe = maxLen(W);
 		final int w = bi.getWidth();
 		final int h = bi.getHeight();
@@ -38,20 +45,24 @@ class Animate {	// -------------------------------------------------------------
 
 		// print image	
 		for (int x = 0; x < W; x++){
-		for (int y = 0; y < W; y++){ colour = (int)Math.round(255*(c[x][y][mid]-minPo)/(maxPo-minPo)); 
+		for (int y = 0; y < W; y++){ // colour of a square
+					     colour = (int)Math.round(255*(c[x][y][mid]-minPo)/(maxPo-minPo)); 
+					     // chooses eField or mField corresponding to input	
 					     if(ch<4){	 
 					     field = PDE.eField(c,x,y,mid,W);
 					     } else{		
 					     field = PDE.mField(c,x,y,mid,W);	
 					     }
+					     // makes the 21x21 square	
 					     xP = x*sq;
 					     yP = y*sq;		
 					     //each point in the original array corresponds to a 21x21 drawn in the graphics
 					     for (int i = 0; i < sq; i++){
 					     for (int j = 0; j < sq; j++){ bi.setRGB(xP+i, yP+j, new Color(colour,colour,colour).getRGB());}} 
+					     //10*field[0]/maxLe	could be used to scale the arrrows
 					     drawArrow(g, xP+sq2, yP+sq2, 10, field[1]); }}	
 	}
-  //5*field[0]/maxLe
+
 
 	
 	//----------------------------------------------------------------------
@@ -101,8 +112,8 @@ class Animate {	// -------------------------------------------------------------
 		final int W = Integer.parseInt(args[0]);
 		final double acc = Double.parseDouble(args[1]); // input for convergence
 		final int out = Integer.parseInt(args[2]); // output choice	
-		final int alg = Integer.parseInt(args[3]); // output choice
-		final int ch = Integer.parseInt(args[4]); // output choice
+		final int alg = Integer.parseInt(args[3]); // algorithm choice
+		final int ch = Integer.parseInt(args[4]); // point charge/ quadrupole etc. choice
 		
 		final int imW = sq*W;
 	
@@ -118,6 +129,7 @@ class Animate {	// -------------------------------------------------------------
 
 		init(bi,W,acc,alg,ch);
 		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {f.getGraphics().drawImage(bi, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);}}}, 0, 1);
+		// no need to run updates as model is only display once error is below input error level
 		//new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {synchronized(lock) {update(bi,W);}}}, 0, 1);
 	}
 
