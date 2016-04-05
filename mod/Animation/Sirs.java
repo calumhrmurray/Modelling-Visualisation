@@ -70,8 +70,8 @@ public class Sirs{
 
 		//Animate.main(args);
 		//Animate1.main(args);
-		//Animate2.main(args);
-		AnimateBlack.main(args);
+		Animate2.main(args);
+		//AnimateBlack.main(args);
 		
 		
 
