@@ -27,9 +27,8 @@ class PottsAnimate {	// --------------------------------------------------------
 					val == 2 ? Color.RED.getRGB() : Color.WHITE.getRGB());}}
 	}
 
-	static void update(final BufferedImage bi, final Scrollbar tempScale, final int d, final int W) {		
+	static void update(final BufferedImage bi, double t, final int d, final int W) {		
 			// Work on l to update bi 
-			double t = tempScale.getValue()/100;			
 			int[][] l = Imodel.updatePotts(d,t,W);
 			int val = 0;
 			double M = Stats.updateM(l,W);
@@ -47,7 +46,7 @@ class PottsAnimate {	// --------------------------------------------------------
 		if (args.length != 5) throw new Exception("Arguments: width[pixels] height[pixels] period[milliseconds]");
 		final int W = Integer.parseInt(args[0]);
 		final int H = Integer.parseInt(args[0]);
-		final int t = Integer.parseInt(args[1]);
+		final double t = Double.parseDouble(args[1]); // initial temperature
 		final int c = Integer.parseInt(args[2]);
 		final int d = Integer.parseInt(args[3]);
 		final int sim = Integer.parseInt(args[4]);
@@ -62,22 +61,6 @@ class PottsAnimate {	// --------------------------------------------------------
 		f.setExtendedState(Frame.MAXIMIZED_BOTH);
 		f.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent we) {System.exit(0);}});
 
-		// adding a scoller to change the temperature
-		Panel controlPanel = new Panel();
-		f.add(controlPanel,BorderLayout.SOUTH);
-		controlPanel.add(labelT);
-		final Scrollbar tempScale = new Scrollbar(Scrollbar.HORIZONTAL,50,1,0,250){ 
-			public Dimension getPreferredSize(){
-				return new Dimension(100,15); // make it bigger than default
-			}
-		};
-		controlPanel.add(tempScale); 	
-        	tempScale.addAdjustmentListener(new AdjustmentListener() {
-            	public void adjustmentValueChanged(AdjustmentEvent e) {
-                	labelT.setText("Temperature: " + tempScale.getValue()); 
-            	}
-        	});
-
 		init(bg,W,c);
 		fg.setData(bg.getData());
 
@@ -86,7 +69,7 @@ class PottsAnimate {	// --------------------------------------------------------
 				fg, 0, f.getInsets().top, f.getWidth(), f.getHeight() - f.getInsets().top, null);
 								}}, 0, 33);
 
-		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {update(bg,tempScale,d,W); fg.setData(bg.getData());}}, 0, 1);}
+		new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {update(bg,t,d,W); fg.setData(bg.getData());}}, 0, 1);}
 		//new Timer().scheduleAtFixedRate(new TimerTask() {public void run() {init(bg,d,W); fg.setData(bg.getData());}}, 0, 1);}
 }
 

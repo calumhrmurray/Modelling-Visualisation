@@ -136,13 +136,22 @@ public class Ising{
 	static int[][] glauberPotts(int[][] l, double temperature, final int W){
 		// number of steps before displayed on screen
                 for (int k=0; k<W*W; k++){ 
+			
+			//mutation
+			// choose a random row and column
+			int s = (int) (Math.random()*W); 
+                	int t = (int) (Math.random()*W);
+			double p = 0.03;
+			double mutateRandom = Math.random();
+			if (mutateRandom<p){ if (l[s][t] == 2){ l[s][t] = 0 ;} else { l[s][t]++;} }
+			
 			double random = Math.random();
 			int val = (int) (Math.random()*3); 
 			// choose a random row and column
 			int i = (int) (Math.random()*W); 
                 	int j = (int) (Math.random()*W);
                 	// work out energy change if spin is swapped
-			double delta = -PottsEnergy(l,W,i,j,l[i][j])+PottsEnergy(l,W,i,j,val);
+			double delta = PottsEnergy(l,W,val,i,j)-PottsEnergy(l,W,l[i][j],i,j);
 			// metropolis	
 			if (Math.random()<Math.exp(-2*delta/temperature*kb)){l[i][j] = val;} 
 		}			
@@ -155,7 +164,7 @@ public class Ising{
 	public static void main(final String[] args) throws Exception {
 		if (args.length != 5) throw new Exception("Arguments: width[pixels] height[pixels] T[]");
 		final int W = Integer.parseInt(args[0]); // lattice size
-		final int t = Integer.parseInt	(args[1]); // initial temperature
+		final double t = Double.parseDouble(args[1]); // initial temperature
 		final int c = Integer.parseInt(args[2]); // initialisation
 		final int d = Integer.parseInt(args[3]); // dynamics 
 		final int sim = Integer.parseInt(args[4]); // simulation
