@@ -43,6 +43,7 @@ public class Ising{
 		}	
          return l;	
 	}	
+
 	// Potts model
 	static int[][] initPotts(final int W, final int c) {
 		double random = Math.random();
@@ -143,7 +144,7 @@ public class Ising{
                 	int t = (int) (Math.random()*W);
 			double p = 0.03;
 			double mutateRandom = Math.random();
-			if (mutateRandom<p){ if (l[s][t] == 2){ l[s][t] == 0 ;} else { l[s][t]++;} }
+			//if (mutateRandom<p){ if (l[s][t] == 2){ l[s][t] = 0 ;} else { l[s][t]++;} }
 			
 			double random = Math.random();
 			int val = (int) (Math.random()*3); 
@@ -172,6 +173,7 @@ public class Ising{
 		String filename = "random.data";
 		// Set output filename
 		if(d==0){filename = "glauber.data";}else{filename = "kawasaki.data";}
+		filename = "potts.data";
 		// start printer
 		PrintWriter output = new PrintWriter(new FileWriter(filename));
 
@@ -184,6 +186,7 @@ public class Ising{
 		//Animate.main(args);
 		PottsAnimate.main(args);
 		} else if (sim==1) { Simulate.startMeasurements(l,d,W,1000,J,kb,output); 
+		} else if (sim==2) {Simulate.pottsMeasurements(l,d,W,1000,J,kb,output); 
 		} else {System.out.println("Simulation does not exist: sim = 0 for animation, sim = 1 for Chi and Cv calculations");}
 			
 

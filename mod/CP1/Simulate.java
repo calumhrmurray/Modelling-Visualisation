@@ -50,4 +50,41 @@ public class Simulate{
 
 	}
 
+	public static void pottsMeasurements(int[][] l, final int d, final int W, int c, double J, double kb,PrintWriter output){
+
+		int wait = 3000;
+		double avE = 0;
+		double avE2 = 0;
+		double variance = 0;
+		double error1 = 0;
+		double error2 = 0;
+
+		for (double temp = 0.3; temp < 2.6; temp += 0.1){
+
+			l = Ising.initPotts(W,c);
+
+			for ( int t = 0; t < wait+1000; t++){
+
+				if (t>wait){
+					avE += Stats.pottsUpdateE(l,W,J);
+					avE2 = avE*avE;
+				}
+
+			l = Ising.updatePotts(d,temp,W);		
+			System.out.printf("\r Progress:" +temp);
+			}
+	
+			avE = avE/1000;
+			avE2 = avE2/1000;
+			variance = avE2-avE*avE;
+			output.printf(" "+temp+" "+avE+" "+variance+ " "+error1+" "+error2+"\n");
+			avE = avE2 = variance = 0;
+
+		}
+
+
+		output.close();	
+
+	}
+
 }	

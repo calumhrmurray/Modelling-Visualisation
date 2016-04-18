@@ -26,6 +26,18 @@ public class Stats{
 		}}
 		return E;
 	}
+	// returns the energy of the lattice
+	public static double pottsUpdateE(int[][] l, final int W, double J){
+		int r,t;
+		double E =0;
+		for (int i = 0; i < W; i++){
+		for (int j = 0; j < W; j++){
+   	        if (i == W-1){r = l[0][j];}else{r = l[i+1][j];}
+   	        if (j == 0){t = l[i][W-1];}else{t = l[i][j-1];}
+		E += -J * ((r==l[i][j]?1:0) + (t==l[i][j]?1:0));
+		}}
+		return E;
+	}
 	// returns Chi Cv and errors in measurements
 	public static double[][] stats(double[][] sArray, int N, double T, final int W, double kb){
 		double[][] rArray = new double[N][2];

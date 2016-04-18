@@ -155,9 +155,9 @@ public class PDE{
 		for (int j=0; j<W+1; j++){ 
 		for (int k=0; k<W+1; k++){
 					
-					 if (i==mid+5){
+					 if (i==mid+2){
 						p[i][j][k] = 10000.0; 
-					} else if (i==mid-5){		
+					} else if (i==mid-2){		
 						p[i][j][k] = 10000.0; 
 					} else {
 						p[i][j][k] = 0.0;
@@ -172,9 +172,9 @@ public class PDE{
 		for (int j=0; j<W+1; j++){ 
 		for (int k=0; k<W+1; k++){
 					
-					 if (i==mid+5){
+					 if (i==mid+2){
 						p[i][j][k] = 10000.0; 
-					} else if (i==mid-5){		
+					} else if (i==mid-2){		
 						p[i][j][k] = -10000.0; 
 					} else {
 						p[i][j][k] = 0.0;
@@ -589,9 +589,9 @@ public class PDE{
 		PrintWriter output = new PrintWriter(new FileWriter(filename));  
 		SORconvergence(W,acc,output);
 		} else if (out == 2){
-		filename = "quadrupoleFieldPatterns.data"; 
+		filename = "newParPatterns.data"; 
 		PrintWriter output = new PrintWriter(new FileWriter(filename));  
-		EfieldPatterns(W,acc,alg,output);
+		MfieldPatterns(W,acc,alg,output);
 		} 
 	}
 
