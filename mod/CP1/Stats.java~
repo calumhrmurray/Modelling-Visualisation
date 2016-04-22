@@ -34,7 +34,7 @@ public class Stats{
 		for (int j = 0; j < W; j++){
    	        if (i == W-1){r = l[0][j];}else{r = l[i+1][j];}
    	        if (j == 0){t = l[i][W-1];}else{t = l[i][j-1];}
-		E += -J * ((r==l[i][j]?1:0) + (t==l[i][j]?1:0);
+		E += -J * ((r==l[i][j]?1:0) + (t==l[i][j]?1:0));
 		}}
 		return E;
 	}
@@ -93,6 +93,32 @@ public class Stats{
 		sigArray[0][1] = Math.sqrt(sigArray[0][1]);
 		return sigArray	;
 	}
+
+	// bootstrap
+	public static double[][] ExamBootstrap(double[] sArray, int N, double T, final int W, double kb){
+		// number of Cv,Chi taken from bootstrap
+		int n = 10;
+		double[][] rArray = new double[N][2];
+		double[][] bootArray = new double[n][2];
+		double[] sigArray = new double[2];
+		// calc. Cv and Chi n times using resampled data
+		for (int i = 0; i<n; i++){
+			// pick out n measurements at random and compute Cv, Chi
+			for (int j = 0; j<N; j++){
+				rArray[j][0] = sArray[(int)(Math.random()*N)][0];	
+				rArray[j][1] = sArray[(int)(Math.random()*N)][1];	
+			}
+			// array with n values of Cv and Chi
+			bootArray[i][0] = calc(rArray,N,T,W,kb)[0][0];
+			bootArray[i][1] = calc(rArray,N,T,W,kb)[0][1];
+		}	
+		// calculate sum of (ci-c)2
+		sigArray = variance(bootArray,n,N);
+		sigArray[0] = Math.sqrt(sigArray[0]);
+		sigArray[1] = Math.sqrt(sigArray[1]);
+		return sigArray	;
+	}
+
 	// jacknife
 	public static double[][] jacknife(double[][] sArray,double[][] dataArray, int N, double T, final int W, double kb){
 		// number of Cv,Chi taken from bootstrap

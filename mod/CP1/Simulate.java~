@@ -52,32 +52,44 @@ public class Simulate{
 
 	public static void pottsMeasurements(int[][] l, final int d, final int W, int c, double J, double kb,PrintWriter output){
 
-		int wait = 3000;
+		int wait = 10000;
 		double avE = 0;
 		double avE2 = 0;
 		double variance = 0;
-		double error1 = 0;
-		double error2 = 0;
+		double errorAv = 0;
+		double errorVar = 0;
+		// number of measurements
+		int n = 1000;
+		double[] dataArr = new double[n];
 
-		for (double temp = 0.3; temp < 2.3; temp += 0.1){
+		for (double temp = 0.3; temp < 2.5; temp += 0.2){
+			
+			avE = 0;
+			avE2 = 0;
 
 			l = Ising.initPotts(W,c);
 
-			for ( int t = 0; t < wait+1000; t++){
+			for ( int t = 0; t < wait+n; t++){
 
 				if (t>wait){
-					avE += Stats.pottsUpdateE(l,W,J);
-					avE2 = avE*avE;
+					dataArr[t-wait] = Stats.pottsUpdateE(l,W,J);
 				}
 
 			l = Ising.updatePotts(d,temp,W);		
 			System.out.printf("\r Progress:" +temp);
 			}
-	
-			avE = avE/1000;
-			avE2 = avE2/1000;
+			// calculate error on avE and error on varE
+			for ( int i = 0; i<n; i++){
+				avE += dataArr[i];
+				avE2 += dataArr[i]*dataArr[i];
+			}
+
+			avE = avE/n;
+			avE2 = avE2/n;
 			variance = avE2-avE*avE;
-			output.printf(" "+temp+" "+avE+" "+variance+ " "+error1+" "+error2+"\n");
+
+
+			output.printf(" "+temp+" "+avE+" "+variance+ " "+errorAv+" "+errorVar+"\n");
 			avE = avE2 = variance = 0;
 
 		}

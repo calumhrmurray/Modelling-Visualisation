@@ -172,8 +172,8 @@ public class Ising{
 
 		String filename = "random.data";
 		// Set output filename
-		if(d==0){filename = "glauber.data";}else{filename = "kawasaki.data";}
-		filename = "potts.data";
+		//if(d==0){filename = "glauber.data";}else{filename = "kawasaki.data";}
+		filename = "newpotts.data";
 		// start printer
 		PrintWriter output = new PrintWriter(new FileWriter(filename));
 

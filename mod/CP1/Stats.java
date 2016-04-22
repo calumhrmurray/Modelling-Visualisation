@@ -93,6 +93,8 @@ public class Stats{
 		sigArray[0][1] = Math.sqrt(sigArray[0][1]);
 		return sigArray	;
 	}
+
+
 	// jacknife
 	public static double[][] jacknife(double[][] sArray,double[][] dataArray, int N, double T, final int W, double kb){
 		// number of Cv,Chi taken from bootstrap
