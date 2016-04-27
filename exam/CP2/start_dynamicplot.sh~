@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm plot.dat
+
+echo -e "0 0.33 0.33 0.33" >> plot.dat
+
+gnuplot dynamicplot.gnu

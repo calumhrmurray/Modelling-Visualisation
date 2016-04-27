@@ -1,0 +1,46 @@
+
+
+*******************************************************************************
+Tue Apr 26 19:02:31 2016
+
+
+FIT:    data read from "SuperFluid.data" u 1:2
+        format = x:z
+        #datapoints = 30
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+fitted parameters initialized with current variable values
+
+
+
+ Iteration 0
+ WSSR        : 5.78746e+06       delta(WSSR)/WSSR   : 0
+ delta(WSSR) : 0                 limit for stopping : 1e-05
+ lambda	  : 1.44078
+
+initial set of free parameter values
+
+a               = 1
+b               = 1
+
+After 3 iterations the fit converged.
+final sum of squares of residuals : 746460
+rel. change during last iteration : -4.64391e-06
+
+degrees of freedom    (FIT_NDF)                        : 28
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 163.277
+variance of residuals (reduced chisquare) = WSSR/ndf   : 26659.3
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+
+a               = 275.443          +/- 34.44        (12.5%)
+b               = -758.463         +/- 61.14        (8.061%)
+
+
+correlation matrix of the fit parameters:
+
+               a      b      
+a               1.000 
+b              -0.873  1.000 
